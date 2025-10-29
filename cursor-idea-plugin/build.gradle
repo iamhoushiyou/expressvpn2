@@ -1,0 +1,94 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '1.17.2'
+}
+
+group 'com.cursor.idea.plugin'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // IntelliJ 平台依赖会自动添加
+    testImplementation 'junit:junit:4.13.2'
+}
+
+// 配置 IntelliJ 插件
+intellij {
+    version = '2023.1' // IntelliJ IDEA 版本
+    type = 'IC' // 社区版
+    
+    // 插件依赖
+    plugins = [
+        'com.intellij.java',
+        'org.jetbrains.plugins.yaml'
+    ]
+}
+
+// 配置 Java 编译
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+// 配置插件验证
+patchPluginXml {
+    changeNotes = """
+        <h3>Version 1.0.0</h3>
+        <ul>
+            <li>初始版本发布</li>
+            <li>集成 Cursor AI 功能</li>
+            <li>支持代码解释、优化、生成和修复</li>
+            <li>提供聊天界面和工具窗口</li>
+        </ul>
+    """
+}
+
+// 配置插件签名（可选）
+signPlugin {
+    certificateChain = System.getenv("CERTIFICATE_CHAIN")
+    privateKey = System.getenv("PRIVATE_KEY")
+    password = System.getenv("PRIVATE_KEY_PASSWORD")
+}
+
+// 配置插件发布（可选）
+publishPlugin {
+    token = System.getenv("PUBLISH_TOKEN")
+}
+
+// 配置测试
+test {
+    useJUnit()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+// 配置 JAR 任务
+jar {
+    archiveBaseName = 'cursor-idea-plugin'
+    archiveVersion = version
+}
+
+// 清理任务
+clean {
+    delete 'build'
+    delete 'out'
+}
+
+// 自定义任务：创建发布包
+task createReleasePackage(type: Zip, dependsOn: buildPlugin) {
+    from buildPlugin.outputs.files
+    archiveFileName = "cursor-idea-plugin-${version}.zip"
+    destinationDirectory = file("$buildDir/release")
+    
+    doLast {
+        println "发布包已创建: $buildDir/release/cursor-idea-plugin-${version}.zip"
+    }
+}

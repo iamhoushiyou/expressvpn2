@@ -1,0 +1,127 @@
+<idea-plugin>
+    <id>com.cursor.idea.plugin</id>
+    <name>Cursor AI Assistant</name>
+    <version>1.0.0</version>
+    <vendor email="support@cursor.com" url="https://cursor.com">Cursor Team</vendor>
+
+    <description><![CDATA[
+        Cursor AI Assistant for IntelliJ IDEA - 在 IDEA 中直接使用 Cursor 的 AI 功能进行代码编写和优化。
+        
+        功能特性:
+        • AI 代码补全和建议
+        • 智能代码重构
+        • 代码解释和文档生成
+        • 错误修复建议
+        • 与 Cursor 编辑器的无缝集成
+        
+        使用方法:
+        1. 右键点击代码选择 "Cursor AI" 菜单
+        2. 使用快捷键 Ctrl+Shift+C 快速调用 AI 助手
+        3. 在工具窗口中与 AI 进行交互
+    ]]></description>
+
+    <change-notes><![CDATA[
+        Version 1.0.0:
+        • 初始版本发布
+        • 基本的 AI 代码助手功能
+        • 与 Cursor 的集成
+    ]]></change-notes>
+
+    <!-- 支持的 IntelliJ 平台版本 -->
+    <idea-version since-build="203" until-build="241.*"/>
+
+    <!-- 插件依赖 -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.lang</depends>
+
+    <!-- 扩展点 -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- 工具窗口 -->
+        <toolWindow id="Cursor AI" secondary="true" icon="/icons/cursor-icon.png" anchor="right"
+                    factoryClass="com.cursor.idea.plugin.ui.CursorToolWindowFactory"/>
+        
+        <!-- 代码完成提供器 -->
+        <completion.contributor language="JAVA" 
+                              implementationClass="com.cursor.idea.plugin.completion.CursorCompletionContributor"/>
+        
+        <!-- 意图动作 -->
+        <intentionAction>
+            <className>com.cursor.idea.plugin.intentions.ExplainCodeIntention</className>
+            <category>Cursor AI</category>
+        </intentionAction>
+        
+        <intentionAction>
+            <className>com.cursor.idea.plugin.intentions.OptimizeCodeIntention</className>
+            <category>Cursor AI</category>
+        </intentionAction>
+        
+        <!-- 检查器 -->
+        <localInspection language="JAVA" 
+                        implementationClass="com.cursor.idea.plugin.inspections.CursorAIInspection"
+                        displayName="Cursor AI Code Analysis"
+                        groupName="Cursor AI"
+                        enabledByDefault="true"/>
+    </extensions>
+
+    <!-- 动作 -->
+    <actions>
+        <!-- 主菜单组 -->
+        <group id="CursorAIGroup" text="Cursor AI" description="Cursor AI Assistant Actions">
+            <add-to-group group-id="MainMenu" anchor="before" relative-to-action="HelpMenu"/>
+            
+            <action id="CursorAI.ExplainCode" 
+                    class="com.cursor.idea.plugin.actions.ExplainCodeAction"
+                    text="解释代码" 
+                    description="使用 Cursor AI 解释选中的代码">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift E"/>
+            </action>
+            
+            <action id="CursorAI.OptimizeCode" 
+                    class="com.cursor.idea.plugin.actions.OptimizeCodeAction"
+                    text="优化代码" 
+                    description="使用 Cursor AI 优化选中的代码">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift O"/>
+            </action>
+            
+            <action id="CursorAI.GenerateCode" 
+                    class="com.cursor.idea.plugin.actions.GenerateCodeAction"
+                    text="生成代码" 
+                    description="使用 Cursor AI 生成代码">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift G"/>
+            </action>
+            
+            <action id="CursorAI.FixCode" 
+                    class="com.cursor.idea.plugin.actions.FixCodeAction"
+                    text="修复代码" 
+                    description="使用 Cursor AI 修复代码问题">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift F"/>
+            </action>
+            
+            <separator/>
+            
+            <action id="CursorAI.OpenChat" 
+                    class="com.cursor.idea.plugin.actions.OpenChatAction"
+                    text="打开 AI 聊天" 
+                    description="打开 Cursor AI 聊天窗口">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift C"/>
+            </action>
+        </group>
+
+        <!-- 右键菜单 -->
+        <group id="CursorAIEditorPopup" text="Cursor AI">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <reference ref="CursorAI.ExplainCode"/>
+            <reference ref="CursorAI.OptimizeCode"/>
+            <reference ref="CursorAI.GenerateCode"/>
+            <reference ref="CursorAI.FixCode"/>
+        </group>
+    </actions>
+
+    <!-- 应用组件 -->
+    <application-components>
+        <component>
+            <implementation-class>com.cursor.idea.plugin.CursorPluginComponent</implementation-class>
+        </component>
+    </application-components>
+</idea-plugin>
